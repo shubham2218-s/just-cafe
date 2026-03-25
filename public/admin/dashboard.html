@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Campus Café</title>
+<link rel="stylesheet" href="/css/style.css">
+<style>
+    body { background: #F5EFE8; }
+
+    .admin-layout { display: flex; min-height: calc(100vh - 64px); }
+
+    .admin-sidebar {
+        width: 240px;
+        background: var(--bg-dark);
+        padding: 1.5rem 1rem;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .sidebar-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #6B5040;
+        padding: 0.5rem 1rem 0.25rem;
+        margin-top: 0.5rem;
+    }
+
+    .admin-sidebar a {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        color: #C8B4A4;
+        text-decoration: none;
+        padding: 0.7rem 1rem;
+        border-radius: 10px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    .admin-sidebar a:hover { background: rgba(212,160,84,0.15); color: #fff; }
+    .admin-sidebar a.active { background: rgba(212,160,84,0.25); color: var(--accent); }
+
+    .admin-main { flex: 1; padding: 2rem; overflow: auto; }
+
+    .page-title { font-size: 1.6rem; font-weight: 900; color: var(--primary-dark); margin-bottom: 0.25rem; }
+    .page-subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+
+    .stat-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.4rem;
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .stat-icon {
+        width: 50px; height: 50px;
+        border-radius: 14px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem;
+        flex-shrink: 0;
+    }
+    .stat-icon.brown { background: rgba(111,78,55,0.12); }
+    .stat-icon.gold { background: rgba(212,160,84,0.15); }
+    .stat-icon.green { background: rgba(76,175,80,0.12); }
+    .stat-icon.blue { background: rgba(33,150,243,0.1); }
+
+    .stat-info .stat-value { font-size: 1.7rem; font-weight: 900; color: var(--primary-dark); line-height: 1; }
+    .stat-info .stat-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-top: 0.25rem; }
+
+    .recent-orders .order-row {
+        display: flex;
+        align-items: center;
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid var(--border);
+        gap: 1rem;
+        font-size: 0.88rem;
+    }
+    .recent-orders .order-row:last-child { border-bottom: none; }
+    .order-row .order-id { font-weight: 700; color: var(--primary); min-width: 70px; }
+    .order-row .user { flex: 1; color: var(--text-light); }
+    .order-row .items { flex: 2; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+    .order-row .amount { font-weight: 700; color: var(--text); min-width: 60px; text-align: right; }
+
+    .status-select {
+        padding: 3px 8px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        background: var(--bg);
+        color: var(--text);
+    }
+
+    .chart-bar-wrap { margin-top: 1rem; }
+    .chart-bar-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem; font-size: 0.82rem; }
+    .chart-bar-label { width: 80px; color: var(--text-light); font-weight: 600; text-align: right; }
+    .chart-bar-bg { flex: 1; background: var(--border); border-radius: 20px; height: 10px; }
+    .chart-bar-fill { height: 100%; border-radius: 20px; background: var(--gradient); transition: width 1s ease; }
+    .chart-bar-val { width: 50px; color: var(--text-muted); font-size: 0.78rem; }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; }
+    @media(max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/" class="navbar-brand">☕ <span>Campus</span>Café</a>
+    <ul class="nav-links" id="navUserSection"></ul>
+</nav>
+
+<div class="admin-layout">
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+        <div style="padding: 0.5rem 1rem 1.2rem; border-bottom: 1px solid #3A2416; margin-bottom: 0.5rem;">
+            <div style="font-size:0.8rem;color:#6B5040;font-weight:600;">ADMIN PANEL</div>
+            <div style="font-size:1rem;color:var(--accent);font-weight:800;margin-top:2px;">Campus Café</div>
+        </div>
+        <div class="sidebar-label">Main</div>
+        <a href="/admin/dashboard" class="active">📊 Dashboard</a>
+        <a href="/admin/orders">📋 Manage Orders</a>
+        <div class="sidebar-label">Catalogue</div>
+        <a href="/admin/menu-management">🍽️ Menu Items</a>
+        <div class="sidebar-label">Store</div>
+        <a href="/menu" target="_blank">👁️ View Menu</a>
+        <a href="/" style="margin-top:auto;">🏠 Go to Site</a>
+        <a href="#" onclick="logout()" style="color:#E07070;">🚪 Logout</a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-main">
+        <div class="page-title">Dashboard</div>
+        <div class="page-subtitle" id="lastUpdated">Loading stats...</div>
+
+        <!-- STAT CARDS -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card"><div class="stat-icon brown">📦</div><div class="stat-info"><div class="stat-value" id="totalOrders">—</div><div class="stat-label">Total Orders</div></div></div>
+            <div class="stat-card"><div class="stat-icon gold">💰</div><div class="stat-info"><div class="stat-value" id="totalRevenue">—</div><div class="stat-label">Revenue</div></div></div>
+            <div class="stat-card"><div class="stat-icon green">👥</div><div class="stat-info"><div class="stat-value" id="totalUsers">—</div><div class="stat-label">Students</div></div></div>
+            <div class="stat-card"><div class="stat-icon blue">🍽️</div><div class="stat-info"><div class="stat-value" id="totalItems">—</div><div class="stat-label">Menu Items</div></div></div>
+        </div>
+
+        <div class="two-col">
+            <!-- RECENT ORDERS -->
+            <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                    <h3 style="font-size:1rem;font-weight:800;color:var(--primary-dark);">Recent Orders</h3>
+                    <a href="/admin/orders" style="font-size:0.82rem;color:var(--primary);font-weight:600;text-decoration:none;">View all →</a>
+                </div>
+                <div class="card recent-orders" id="recentOrders">
+                    <div style="padding:2rem;text-align:center;color:var(--text-muted);">Loading...</div>
+                </div>
+            </div>
+
+            <!-- ORDER STATUS BREAKDOWN -->
+            <div>
+                <div style="margin-bottom:1rem;">
+                    <h3 style="font-size:1rem;font-weight:800;color:var(--primary-dark);">Order Status Breakdown</h3>
+                </div>
+                <div class="card" style="padding:1.5rem;">
+                    <div class="chart-bar-wrap" id="statusChart">
+                        <div style="text-align:center;padding:2rem;color:var(--text-muted);">Loading...</div>
+                    </div>
+                </div>
+
+                <div style="margin-top:1.5rem;margin-bottom:1rem;">
+                    <h3 style="font-size:1rem;font-weight:800;color:var(--primary-dark);">Quick Actions</h3>
+                </div>
+                <div class="card" style="padding:1.2rem;display:flex;flex-direction:column;gap:0.75rem;">
+                    <a href="/admin/menu-management" class="btn btn-primary" style="justify-content:center;">+ Add New Menu Item</a>
+                    <a href="/admin/orders" class="btn btn-outline" style="justify-content:center;">📋 View Pending Orders</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="/js/main.js"></script>
+<script>
+async function checkAdmin() {
+    const auth = await getAuthStatus();
+    if (!auth.loggedIn || auth.role !== 'admin') {
+        window.location.href = '/login';
+    }
+}
+
+async function loadStats() {
+    const [statsRes, ordersRes] = await Promise.all([
+        fetch('/api/admin/stats'),
+        fetch('/api/admin/orders')
+    ]);
+    const stats = await statsRes.json();
+    const orders = await ordersRes.json();
+
+    document.getElementById('totalOrders').textContent = stats.totalOrders || 0;
+    document.getElementById('totalRevenue').textContent = '₹' + (parseFloat(stats.totalRevenue) || 0).toFixed(0);
+    document.getElementById('totalUsers').textContent = stats.totalUsers || 0;
+    document.getElementById('totalItems').textContent = stats.totalItems || 0;
+    document.getElementById('lastUpdated').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+
+    // Recent orders
+    const recent = orders.slice(0, 6);
+    const recentEl = document.getElementById('recentOrders');
+    if (!recent.length) {
+        recentEl.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-muted);">No orders yet</div>';
+    } else {
+        recentEl.innerHTML = recent.map(o => `
+            <div class="order-row">
+                <span class="order-id">#${o.id}</span>
+                <span class="user">${o.user_name || 'Student'}</span>
+                <span class="items">${o.items_summary || '—'}</span>
+                <span class="amount">${fmt(o.total_price)}</span>
+                <span class="status-badge ${getStatusClass(o.status)}">${o.status}</span>
+            </div>
+        `).join('');
+    }
+
+    // Status chart
+    const statusCounts = { pending: 0, preparing: 0, ready: 0, delivered: 0 };
+    orders.forEach(o => { if (statusCounts[o.status] !== undefined) statusCounts[o.status]++; });
+    const maxVal = Math.max(...Object.values(statusCounts), 1);
+    const statusLabels = { pending: '🟠 Pending', preparing: '🔵 Preparing', ready: '🟢 Ready', delivered: '🟣 Delivered' };
+    document.getElementById('statusChart').innerHTML = Object.entries(statusCounts).map(([s, v]) => `
+        <div class="chart-bar-row">
+            <span class="chart-bar-label">${statusLabels[s]}</span>
+            <div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${(v/maxVal*100).toFixed(0)}%"></div></div>
+            <span class="chart-bar-val">${v} order${v !== 1 ? 's' : ''}</span>
+        </div>
+    `).join('');
+}
+
+function getStatusClass(s) {
+    return { pending: 'status-pending', preparing: 'status-preparing', ready: 'status-ready', delivered: 'status-delivered' }[s] || 'status-pending';
+}
+
+checkAdmin().then(loadStats);
+setInterval(loadStats, 30000);
+</script>
+</body>
+</html>

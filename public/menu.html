@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menu — Campus Café</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/" class="navbar-brand">☕ <span>Campus</span>Café</a>
+    <ul class="nav-links" id="navUserSection"></ul>
+</nav>
+
+<div style="background:var(--gradient);padding:2.5rem 2rem;color:#fff;text-align:center;">
+    <h1 style="font-size:2rem;font-weight:900;margin-bottom:0.5rem;">Our Menu</h1>
+    <p style="color:rgba(255,255,255,0.8);">Fresh, tasty food made just for you</p>
+</div>
+
+<div class="section">
+    <div class="filter-tabs" id="filterTabs">
+        <button class="filter-btn active" data-cat="all" onclick="filterItems('all', this)">🍽️ All Items</button>
+    </div>
+
+    <div style="margin-bottom:1.5rem;">
+        <input type="text" id="searchBox" class="form-control" placeholder="🔍 Search menu items..." style="max-width:400px;" oninput="renderItems()">
+    </div>
+
+    <div class="menu-grid" id="menuGrid">
+        <div style="text-align:center;padding:3rem;color:var(--text-muted);grid-column:1/-1;">Loading menu...</div>
+    </div>
+</div>
+
+<script src="/js/main.js"></script>
+<script>
+let allItems = [];
+let currentCat = 'all';
+
+async function loadMenu() {
+    const [itemsRes, catsRes] = await Promise.all([
+        fetch('/api/menu'),
+        fetch('/api/menu/categories')
+    ]);
+    allItems = await itemsRes.json();
+    const cats = await catsRes.json();
+
+    const tabs = document.getElementById('filterTabs');
+    cats.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-btn';
+        // Store the MongoDB _id string as data attribute
+        btn.dataset.cat = String(c._id || c.id);
+        btn.textContent = c.name;
+        btn.onclick = () => filterItems(btn.dataset.cat, btn);
+        tabs.appendChild(btn);
+    });
+
+    renderItems();
+}
+
+function filterItems(cat, btn) {
+    currentCat = cat;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderItems();
+}
+
+function renderItems() {
+    const search = document.getElementById('searchBox').value.toLowerCase();
+    let items = allItems;
+
+    if (currentCat !== 'all') {
+        // Compare both category_id and category._id as strings
+        items = items.filter(i => String(i.category_id) === currentCat);
+    }
+    if (search) {
+        items = items.filter(i =>
+            i.name.toLowerCase().includes(search) ||
+            (i.description || '').toLowerCase().includes(search)
+        );
+    }
+
+    const grid = document.getElementById('menuGrid');
+    if (!items.length) {
+        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="icon">🍽️</div><h3>No items found</h3><p>Try a different search or category.</p></div>`;
+        return;
+    }
+
+    grid.innerHTML = items.map(item => {
+        // Use _id if id is not set (safety for MongoDB responses)
+        const itemId = String(item._id || item.id);
+        const imgUrl = item.image_url || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400';
+        const safeName = item.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const safeImg  = imgUrl.replace(/'/g, "\\'");
+
+        return `
+        <div class="card menu-card">
+            <div style="overflow:hidden;height:180px;position:relative;">
+                <img src="${imgUrl}"
+                     alt="${item.name}"
+                     onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400'"
+                     style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s;">
+                <span style="position:absolute;top:10px;right:10px;" class="badge-category">${item.category_name || ''}</span>
+            </div>
+            <div class="menu-card-body">
+                <div class="menu-card-name">${item.name}</div>
+                <div class="menu-card-desc">${item.description || ''}</div>
+                <div class="menu-card-footer">
+                    <span class="price">${fmt(item.price)}</span>
+                    <button class="btn btn-accent btn-sm" onclick="addToCart('${itemId}', '${safeName}', ${item.price}, '${safeImg}')">
+                        + Add to Cart
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// id is now always passed as a string from onclick
+function addToCart(id, name, price, image) {
+    Cart.add({ id: String(id), name, price, image });
+    updateCartBadge();
+}
+
+loadMenu();
+</script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campus Café — Fresh Food, Fast & Easy</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="/" class="navbar-brand">☕ <span>Campus</span>Café</a>
+    <ul class="nav-links" id="navUserSection"></ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Your Campus <span class="highlight">Café</span>,<br>Now Online</h1>
+        <p>Order fresh meals, snacks & beverages from your college café without the queue. Pick up when it's ready!</p>
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+            <a href="/menu" class="btn btn-accent" style="font-size:1rem;padding:0.8rem 2rem;">🍽️ Browse Menu</a>
+            <a href="/register" class="btn btn-outline" style="border-color:#fff;color:#fff;font-size:1rem;padding:0.8rem 2rem;">Sign Up Free</a>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section">
+    <div style="text-align:center;margin-bottom:3rem;">
+        <p class="section-subtitle" style="text-transform:uppercase;letter-spacing:1px;font-weight:700;color:var(--primary);">Why Campus Café?</p>
+        <h2 class="section-title" style="font-size:2.2rem;">Skip the Queue, Not the Food</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;">
+        <div class="card" style="padding:2rem;text-align:center;">
+            <div style="font-size:2.5rem;margin-bottom:1rem;">📱</div>
+            <h3 style="font-weight:700;margin-bottom:0.5rem;">Order Online</h3>
+            <p style="color:var(--text-light);font-size:0.9rem;">Browse the full menu and place your order in seconds from your phone or laptop.</p>
+        </div>
+        <div class="card" style="padding:2rem;text-align:center;">
+            <div style="font-size:2.5rem;margin-bottom:1rem;">⚡</div>
+            <h3 style="font-weight:700;margin-bottom:0.5rem;">Fast Preparation</h3>
+            <p style="color:var(--text-light);font-size:0.9rem;">Real-time order tracking. Know exactly when your food will be ready to pick up.</p>
+        </div>
+        <div class="card" style="padding:2rem;text-align:center;">
+            <div style="font-size:2.5rem;margin-bottom:1rem;">💰</div>
+            <h3 style="font-weight:700;margin-bottom:0.5rem;">Student Friendly</h3>
+            <p style="color:var(--text-light);font-size:0.9rem;">Affordable meals crafted for college students. Delicious food that won't break the bank.</p>
+        </div>
+        <div class="card" style="padding:2rem;text-align:center;">
+            <div style="font-size:2.5rem;margin-bottom:1rem;">🕐</div>
+            <h3 style="font-weight:700;margin-bottom:0.5rem;">Order History</h3>
+            <p style="color:var(--text-light);font-size:0.9rem;">View all your past orders and reorder your favourites with a single tap.</p>
+        </div>
+    </div>
+</section>
+
+<!-- POPULAR ITEMS -->
+<section style="background:linear-gradient(135deg,#FDF0E4,#FFF8F0);padding:3rem 0;">
+    <div class="section">
+        <p class="section-subtitle" style="text-transform:uppercase;letter-spacing:1px;font-weight:700;color:var(--primary);">Fan Favourites</p>
+        <h2 class="section-title">Most Popular Today</h2>
+        <div class="menu-grid" id="popularItems">
+            <div style="text-align:center;padding:2rem;color:var(--text-muted);">Loading...</div>
+        </div>
+        <div style="text-align:center;margin-top:2rem;">
+            <a href="/menu" class="btn btn-primary">View Full Menu →</a>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="section" style="text-align:center;padding:4rem 2rem;">
+    <h2 style="font-size:2rem;font-weight:900;color:var(--primary-dark);margin-bottom:1rem;">Ready to Order?</h2>
+    <p style="color:var(--text-light);margin-bottom:2rem;">Create a free account and start enjoying café convenience.</p>
+    <a href="/register" class="btn btn-primary" style="font-size:1rem;padding:0.9rem 2.5rem;">Get Started Free</a>
+</section>
+
+<footer style="background:var(--bg-dark);color:#C8B4A4;text-align:center;padding:1.5rem;font-size:0.85rem;">
+    <p>☕ Campus Café Ordering System · Made with ♥ for students</p>
+</footer>
+
+<script src="/js/main.js"></script>
+<script>
+async function loadPopular() {
+    const res = await fetch('/api/menu');
+    const items = await res.json();
+    const grid = document.getElementById('popularItems');
+    const top = items.slice(0, 4);
+    grid.innerHTML = top.map(item => `
+        <div class="card menu-card">
+            <div style="overflow:hidden;height:180px;">
+                <img src="${item.image_url || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400'}" alt="${item.name}" onerror="this.src='https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400'">
+            </div>
+            <div class="menu-card-body">
+                <span class="badge-category">${item.category_name || 'Food'}</span>
+                <div class="menu-card-name" style="margin-top:0.4rem;">${item.name}</div>
+                <div class="menu-card-desc">${item.description || ''}</div>
+                <div class="menu-card-footer">
+                    <span class="price">${fmt(item.price)}</span>
+                    <button class="btn btn-accent btn-sm" onclick="Cart.add({id:String(item._id||item.id),name:'${item.name}',price:${item.price},image:'${item.image_url}'});updateCartBadge()">+ Add</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+loadPopular();
+</script>
+</body>
+</html>

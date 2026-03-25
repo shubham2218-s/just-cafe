@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Orders — Campus Café</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/" class="navbar-brand">☕ <span>Campus</span>Café</a>
+    <ul class="nav-links" id="navUserSection"></ul>
+</nav>
+
+<div style="background:var(--gradient);padding:2.5rem 2rem;color:#fff;text-align:center;">
+    <h1 style="font-size:2rem;font-weight:900;margin-bottom:0.3rem;">📋 My Orders</h1>
+    <p style="color:rgba(255,255,255,0.8);">Track all your café orders</p>
+</div>
+
+<div class="section" style="max-width:800px;">
+    <div id="ordersContent">
+        <div style="text-align:center;padding:3rem;color:var(--text-muted);">Loading orders...</div>
+    </div>
+</div>
+
+<script src="/js/main.js"></script>
+<script>
+const statusColors = {
+    pending: 'status-pending',
+    preparing: 'status-preparing',
+    ready: 'status-ready',
+    delivered: 'status-delivered'
+};
+
+async function loadOrders() {
+    const auth = await getAuthStatus();
+    if (!auth.loggedIn) {
+        window.location.href = '/login';
+        return;
+    }
+
+    const res = await fetch('/api/orders/my');
+    const orders = await res.json();
+    const container = document.getElementById('ordersContent');
+
+    if (!orders.length) {
+        container.innerHTML = `
+            <div class="card empty-state" style="padding:4rem 2rem;">
+                <div class="icon">📋</div>
+                <h3>No orders yet</h3>
+                <p>Place your first order from the menu!</p>
+                <a href="/menu" class="btn btn-primary" style="margin-top:1.5rem;">Browse Menu</a>
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = orders.map(order => `
+        <div class="card order-card">
+            <div class="order-header">
+                <div>
+                    <div class="order-id">Order #${order.id}</div>
+                    <div style="font-size:0.82rem;color:var(--text-muted);margin-top:2px;">${fmtDate(order.order_time)}</div>
+                </div>
+                <span class="status-badge ${statusColors[order.status] || 'status-pending'}">${order.status}</span>
+            </div>
+            <div style="background:var(--bg);border-radius:10px;padding:0.85rem 1rem;margin-bottom:0.75rem;">
+                <div style="font-size:0.82rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.4rem;">Items</div>
+                <div style="font-size:0.95rem;color:var(--text);">${order.items_summary || 'N/A'}</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    ${order.estimated_wait_minutes ? `<span style="font-size:0.85rem;color:var(--text-light);">⏱️ Est. wait: ${order.estimated_wait_minutes} mins</span>` : ''}
+                </div>
+                <div style="font-size:1.1rem;font-weight:800;color:var(--primary);">${fmt(order.total_price)}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+loadOrders();
+// Auto-refresh every 30 seconds
+setInterval(loadOrders, 30000);
+</script>
+</body>
+</html>
