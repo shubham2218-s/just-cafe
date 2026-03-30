@@ -1,7 +1,8 @@
 // ========== GLOBAL API CONFIG ==========
-// If you host frontend AND backend on Vercel, leave this as empty string.
-// If you host frontend on Firebase and backend on Vercel, paste your Vercel URL here.
-const API_BASE = ''; 
+// The backend is hosted on Render, and frontend on Firebase.
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+    ? 'http://localhost:3000' 
+    : 'https://college-cafe.onrender.com'; 
 
 // Intercept all fetch calls starting with '/api' to point to the backend and include credentials for sessions
 const originalFetch = window.fetch;
