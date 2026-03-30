@@ -1,9 +1,20 @@
 const admin = require('firebase-admin');
 
-// Initialize Firebase Admin (uses default credentials depending on environment)
-admin.initializeApp({
+// Initialize Firebase Admin
+let adminConfig = {
     projectId: process.env.FIREBASE_PROJECT_ID || 'college-cafe-5487b'
-});
+};
+
+if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    try {
+        const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+        adminConfig.credential = admin.credential.cert(serviceAccount);
+    } catch (e) {
+        console.error("Failed to parse FIREBASE_SERVICE_ACCOUNT env variable");
+    }
+}
+
+admin.initializeApp(adminConfig);
 
 const db = admin.firestore();
 
