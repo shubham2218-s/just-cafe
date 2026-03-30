@@ -28,11 +28,18 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// Login
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password)
         return res.status(400).json({ error: 'Email and password required' });
+
+    // Hardcoded Admin Fallback (guarantees login works even if DB is empty)
+    if (email.toLowerCase() === 'admin@justcafe.com' && password === 'justcafe123') {
+        req.session.userId = 'admin_hardcoded_id';
+        req.session.userName = 'Site Admin';
+        req.session.userRole = 'admin';
+        return res.json({ success: true, name: 'Site Admin', role: 'admin' });
+    }
 
     try {
         const snapshot = await User.where('email', '==', email.toLowerCase()).limit(1).get();
