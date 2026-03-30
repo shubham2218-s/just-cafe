@@ -1,218 +1,383 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Menu Management — Just Cafe Admin</title>
-<link rel="stylesheet" href="/css/style.css">
-<style>
-    body { background: var(--bg); }
-    .admin-layout { display: flex; min-height: calc(100vh - 64px); }
-    .admin-sidebar { width:240px;background:var(--bg-dark);padding:1.5rem 1rem;flex-shrink:0;display:flex;flex-direction:column;gap:0.25rem; }
-    .sidebar-label { font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6B5040;padding:.5rem 1rem .25rem;margin-top:.5rem; }
-    .admin-sidebar a { display:flex;align-items:center;gap:.7rem;color:#C8B4A4;text-decoration:none;padding:.7rem 1rem;border-radius:10px;font-size:.88rem;font-weight:500;transition:all .2s; }
-    .admin-sidebar a:hover { background:rgba(212,160,84,.15);color:#fff; }
-    .admin-sidebar a.active { background:rgba(212,160,84,.25);color:var(--accent); }
-    .admin-main { flex:1;padding:2rem;overflow:auto; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Management — Just Cafe Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            background: var(--bg);
+        }
 
-    .menu-admin-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.2rem;margin-top:1.5rem; }
-    .menu-admin-card { background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden;transition:box-shadow .2s; }
-    .menu-admin-card:hover { box-shadow:0 6px 20px var(--shadow); }
-    .menu-admin-card.unavailable { opacity:.55; }
-    .menu-admin-card img { width:100%;height:140px;object-fit:cover; }
-    .card-body { padding:.9rem; }
-    .card-name { font-weight:700;font-size:.95rem; }
-    .card-meta { font-size:.78rem;color:var(--text-muted);margin:.2rem 0 .6rem; }
-    .card-price { font-weight:800;color:var(--primary);font-size:1rem; }
-    .card-actions { display:flex;gap:.5rem;padding:.75rem;border-top:1px solid var(--border);background:var(--bg); }
+        .admin-layout {
+            display: flex;
+            min-height: calc(100vh - 64px);
+        }
 
-    .modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:999;padding:1rem; }
-    .modal-overlay.active { display:flex; }
-    .modal-box { background:#fff;border-radius:20px;padding:2rem;max-width:500px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:slideUp .3s ease;max-height:90vh;overflow-y:auto; }
-    @keyframes slideUp { from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1} }
+        .admin-sidebar {
+            width: 240px;
+            background: var(--bg-dark);
+            padding: 1.5rem 1rem;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
 
-    .img-preview { width:100%;height:150px;object-fit:cover;border-radius:10px;margin-bottom:.75rem;display:none;border:1px solid var(--border); }
-    .img-preview.show { display:block; }
+        .sidebar-label {
+            font-size: .7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #6B5040;
+            padding: .5rem 1rem .25rem;
+            margin-top: .5rem;
+        }
 
-    .avail-toggle { display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;background:var(--bg);border-radius:10px;border:2px solid var(--border);cursor:pointer;transition:border-color .2s; }
-    .avail-toggle.on { border-color:var(--success);background:#E8F5E9; }
-    .avail-toggle input { display:none; }
-</style>
+        .admin-sidebar a {
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            color: #C8B4A4;
+            text-decoration: none;
+            padding: .7rem 1rem;
+            border-radius: 10px;
+            font-size: .88rem;
+            font-weight: 500;
+            transition: all .2s;
+        }
+
+        .admin-sidebar a:hover {
+            background: rgba(212, 160, 84, .15);
+            color: #fff;
+        }
+
+        .admin-sidebar a.active {
+            background: rgba(212, 160, 84, .25);
+            color: var(--accent);
+        }
+
+        .admin-main {
+            flex: 1;
+            padding: 2rem;
+            overflow: auto;
+        }
+
+        .menu-admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+
+        .menu-admin-card {
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: box-shadow .2s;
+        }
+
+        .menu-admin-card:hover {
+            box-shadow: 0 6px 20px var(--shadow);
+        }
+
+        .menu-admin-card.unavailable {
+            opacity: .55;
+        }
+
+        .menu-admin-card img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+        }
+
+        .card-body {
+            padding: .9rem;
+        }
+
+        .card-name {
+            font-weight: 700;
+            font-size: .95rem;
+        }
+
+        .card-meta {
+            font-size: .78rem;
+            color: var(--text-muted);
+            margin: .2rem 0 .6rem;
+        }
+
+        .card-price {
+            font-weight: 800;
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: .5rem;
+            padding: .75rem;
+            border-top: 1px solid var(--border);
+            background: var(--bg);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #fff;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+            animation: slideUp .3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1
+            }
+        }
+
+        .img-preview {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: .75rem;
+            display: none;
+            border: 1px solid var(--border);
+        }
+
+        .img-preview.show {
+            display: block;
+        }
+
+        .avail-toggle {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: .75rem 1rem;
+            background: var(--bg);
+            border-radius: 10px;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: border-color .2s;
+        }
+
+        .avail-toggle.on {
+            border-color: var(--success);
+            background: #E8F5E9;
+        }
+
+        .avail-toggle input {
+            display: none;
+        }
+    </style>
 </head>
+
 <body>
 
-<nav class="navbar">
-    <a href="/" class="navbar-brand">☕ <span>Just</span>Cafe</a>
-    <ul class="nav-links" id="navUserSection"></ul>
-</nav>
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">☕ <span>Just</span>Cafe</a>
+        <ul class="nav-links" id="navUserSection"></ul>
+    </nav>
 
-<div class="admin-layout">
-    <aside class="admin-sidebar">
-        <div style="padding:.5rem 1rem 1.2rem;border-bottom:1px solid #3A2416;margin-bottom:.5rem;">
-            <div style="font-size:.8rem;color:var(--text-muted);font-weight:600;">ADMIN PANEL</div>
-            <div style="font-size:1rem;color:var(--accent);font-weight:800;margin-top:2px;">Just Cafe</div>
-        </div>
-        <div class="sidebar-label">Main</div>
-        <a href="/admin/dashboard">📊 Dashboard</a>
-        <a href="/admin/orders">📋 Manage Orders</a>
-        <div class="sidebar-label">Catalogue</div>
-        <a href="/admin/menu-management" class="active">🍽️ Menu Items</a>
-        <div class="sidebar-label">Store</div>
-        <a href="/menu" target="_blank">👁️ View Menu</a>
-        <a href="/">🏠 Go to Site</a>
-        <a href="#" onclick="logout()" style="color:#E07070;">🚪 Logout</a>
-    </aside>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div style="padding:.5rem 1rem 1.2rem;border-bottom:1px solid #3A2416;margin-bottom:.5rem;">
+                <div style="font-size:.8rem;color:var(--text-muted);font-weight:600;">ADMIN PANEL</div>
+                <div style="font-size:1rem;color:var(--accent);font-weight:800;margin-top:2px;">Just Cafe</div>
+            </div>
+            <div class="sidebar-label">Main</div>
+            <a href="/admin/dashboard">📊 Dashboard</a>
+            <a href="/admin/orders">📋 Manage Orders</a>
+            <div class="sidebar-label">Catalogue</div>
+            <a href="/admin/menu-management" class="active">🍽️ Menu Items</a>
+            <div class="sidebar-label">Store</div>
+            <a href="/menu" target="_blank">👁️ View Menu</a>
+            <a href="/">🏠 Go to Site</a>
+            <a href="#" onclick="logout()" style="color:#E07070;">🚪 Logout</a>
+        </aside>
 
-    <main class="admin-main">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem;">
-            <h1 style="font-size:1.6rem;font-weight:900;color:var(--primary-dark);">Menu Management</h1>
-            <button class="btn btn-primary" onclick="openAddModal()">+ Add Item</button>
-        </div>
-        <p style="color:var(--text-muted);font-size:.88rem;margin-bottom:1.5rem;" id="itemCount">Loading...</p>
+        <main class="admin-main">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem;">
+                <h1 style="font-size:1.6rem;font-weight:900;color:var(--primary-dark);">Menu Management</h1>
+                <button class="btn btn-primary" onclick="openAddModal()">+ Add Item</button>
+            </div>
+            <p style="color:var(--text-muted);font-size:.88rem;margin-bottom:1.5rem;" id="itemCount">Loading...</p>
 
-        <div class="filter-tabs" id="catTabs">
-            <button class="filter-btn active" onclick="setCatFilter('all', this)">All Items</button>
-        </div>
+            <div class="filter-tabs" id="catTabs">
+                <button class="filter-btn active" onclick="setCatFilter('all', this)">All Items</button>
+            </div>
 
-        <div class="menu-admin-grid" id="menuGrid">
-            <div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-muted);">Loading...</div>
-        </div>
-    </main>
-</div>
+            <div class="menu-admin-grid" id="menuGrid">
+                <div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-muted);">Loading...</div>
+            </div>
+        </main>
+    </div>
 
-<!-- ADD / EDIT MODAL -->
-<div class="modal-overlay" id="itemModal">
-    <div class="modal-box">
-        <div class="modal-header">
-            <h3 class="modal-title" id="modalTitle">Add Menu Item</h3>
-            <button class="modal-close" onclick="closeModal()">✕</button>
-        </div>
-        <img id="imgPreview" class="img-preview" src="" alt="Preview">
-        <div class="form-group">
-            <label>Item Name *</label>
-            <input type="text" id="f_name" class="form-control" placeholder="e.g. Masala Chai">
-        </div>
-        <div class="form-group">
-            <label>Description</label>
-            <input type="text" id="f_desc" class="form-control" placeholder="Short description">
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+    <!-- ADD / EDIT MODAL -->
+    <div class="modal-overlay" id="itemModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Add Menu Item</h3>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <img id="imgPreview" class="img-preview" src="" alt="Preview">
             <div class="form-group">
-                <label>Price (₹) *</label>
-                <input type="number" id="f_price" class="form-control" placeholder="0.00" step="0.01" min="0">
+                <label>Item Name *</label>
+                <input type="text" id="f_name" class="form-control" placeholder="e.g. Masala Chai">
             </div>
             <div class="form-group">
-                <label>Category *</label>
-                <select id="f_category" class="form-control">
-                    <option value="">Select category</option>
-                </select>
+                <label>Description</label>
+                <input type="text" id="f_desc" class="form-control" placeholder="Short description">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                <div class="form-group">
+                    <label>Price (₹) *</label>
+                    <input type="number" id="f_price" class="form-control" placeholder="0.00" step="0.01" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select id="f_category" class="form-control">
+                        <option value="">Select category</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Image URL</label>
+                <input type="text" id="f_image" class="form-control" placeholder="https://..."
+                    oninput="previewImage(this.value)">
+            </div>
+            <div class="form-group" id="availableGroup" style="display:none;">
+                <label>Availability</label>
+                <label class="avail-toggle" id="availToggle" onclick="toggleAvail()">
+                    <span id="availIcon">✅</span>
+                    <span id="availText">Available on menu</span>
+                    <input type="checkbox" id="f_available" checked>
+                </label>
+            </div>
+            <div id="modalAlert"></div>
+            <div style="display:flex;gap:.75rem;margin-top:1.5rem;">
+                <button class="btn btn-outline" onclick="closeModal()" style="flex:1;">Cancel</button>
+                <button class="btn btn-primary" onclick="saveItem()" style="flex:2;" id="saveBtn">Save Item</button>
             </div>
         </div>
-        <div class="form-group">
-            <label>Image URL</label>
-            <input type="text" id="f_image" class="form-control" placeholder="https://..." oninput="previewImage(this.value)">
-        </div>
-        <div class="form-group" id="availableGroup" style="display:none;">
-            <label>Availability</label>
-            <label class="avail-toggle" id="availToggle" onclick="toggleAvail()">
-                <span id="availIcon">✅</span>
-                <span id="availText">Available on menu</span>
-                <input type="checkbox" id="f_available" checked>
-            </label>
-        </div>
-        <div id="modalAlert"></div>
-        <div style="display:flex;gap:.75rem;margin-top:1.5rem;">
-            <button class="btn btn-outline" onclick="closeModal()" style="flex:1;">Cancel</button>
-            <button class="btn btn-primary" onclick="saveItem()" style="flex:2;" id="saveBtn">Save Item</button>
+    </div>
+
+    <!-- DELETE CONFIRM MODAL -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-box" style="max-width:380px;text-align:center;">
+            <div style="font-size:2.5rem;margin-bottom:1rem;">🗑️</div>
+            <h3 style="font-size:1.2rem;font-weight:800;color:var(--primary-dark);margin-bottom:.5rem;">Remove Item?
+            </h3>
+            <p style="color:var(--text-light);margin-bottom:1.5rem;" id="deleteItemName"></p>
+            <div style="display:flex;gap:.75rem;">
+                <button class="btn btn-outline"
+                    onclick="document.getElementById('deleteModal').classList.remove('active')"
+                    style="flex:1;">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmDelete()" style="flex:1;"
+                    id="confirmDeleteBtn">Remove</button>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- DELETE CONFIRM MODAL -->
-<div class="modal-overlay" id="deleteModal">
-    <div class="modal-box" style="max-width:380px;text-align:center;">
-        <div style="font-size:2.5rem;margin-bottom:1rem;">🗑️</div>
-        <h3 style="font-size:1.2rem;font-weight:800;color:var(--primary-dark);margin-bottom:.5rem;">Remove Item?</h3>
-        <p style="color:var(--text-light);margin-bottom:1.5rem;" id="deleteItemName"></p>
-        <div style="display:flex;gap:.75rem;">
-            <button class="btn btn-outline" onclick="document.getElementById('deleteModal').classList.remove('active')" style="flex:1;">Cancel</button>
-            <button class="btn btn-danger" onclick="confirmDelete()" style="flex:1;" id="confirmDeleteBtn">Remove</button>
-        </div>
-    </div>
-</div>
+    <script src="/js/main.js"></script>
+    <script>
+        let allMenuItems = [];
+        let categories = [];
+        let editingId = null;   // MongoDB ObjectId string
+        let deletingId = null;
+        let currentCatFilter = 'all';
 
-<script src="/js/main.js"></script>
-<script>
-let allMenuItems  = [];
-let categories    = [];
-let editingId     = null;   // MongoDB ObjectId string
-let deletingId    = null;
-let currentCatFilter = 'all';
+        async function checkAdmin() {
+            const auth = await getAuthStatus();
+            if (!auth.loggedIn || auth.role !== 'admin') window.location.href = '/login';
+        }
 
-async function checkAdmin() {
-    const auth = await getAuthStatus();
-    if (!auth.loggedIn || auth.role !== 'admin') window.location.href = '/login';
-}
+        async function loadMenu() {
+            const [itemsRes, catsRes] = await Promise.all([
+                fetch('/api/admin/menu'),
+                fetch('/api/menu/categories')
+            ]);
+            allMenuItems = await itemsRes.json();
+            categories = await catsRes.json();
 
-async function loadMenu() {
-    const [itemsRes, catsRes] = await Promise.all([
-        fetch('/api/admin/menu'),
-        fetch('/api/menu/categories')
-    ]);
-    allMenuItems = await itemsRes.json();
-    categories   = await catsRes.json();
+            // Build category filter tabs
+            const tabs = document.getElementById('catTabs');
+            tabs.innerHTML = `<button class="filter-btn active" onclick="setCatFilter('all', this)">All Items</button>`;
+            categories.forEach(c => {
+                const catId = String(c._id || c.id);
+                const btn = document.createElement('button');
+                btn.className = 'filter-btn';
+                btn.dataset.catid = catId;
+                btn.textContent = c.name;
+                btn.onclick = () => setCatFilter(catId, btn);
+                tabs.appendChild(btn);
+            });
 
-    // Build category filter tabs
-    const tabs = document.getElementById('catTabs');
-    tabs.innerHTML = `<button class="filter-btn active" onclick="setCatFilter('all', this)">All Items</button>`;
-    categories.forEach(c => {
-        const catId = String(c._id || c.id);
-        const btn = document.createElement('button');
-        btn.className = 'filter-btn';
-        btn.dataset.catid = catId;
-        btn.textContent = c.name;
-        btn.onclick = () => setCatFilter(catId, btn);
-        tabs.appendChild(btn);
-    });
+            // Populate category <select> in modal
+            const sel = document.getElementById('f_category');
+            sel.innerHTML = '<option value="">Select category</option>' +
+                categories.map(c => {
+                    const catId = String(c._id || c.id);
+                    return `<option value="${catId}">${c.name}</option>`;
+                }).join('');
 
-    // Populate category <select> in modal
-    const sel = document.getElementById('f_category');
-    sel.innerHTML = '<option value="">Select category</option>' +
-        categories.map(c => {
-            const catId = String(c._id || c.id);
-            return `<option value="${catId}">${c.name}</option>`;
-        }).join('');
+            renderGrid();
+        }
 
-    renderGrid();
-}
+        function setCatFilter(cat, btn) {
+            currentCatFilter = cat;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderGrid();
+        }
 
-function setCatFilter(cat, btn) {
-    currentCatFilter = cat;
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderGrid();
-}
+        function renderGrid() {
+            let items = allMenuItems;
+            if (currentCatFilter !== 'all') {
+                items = items.filter(i => String(i.category_id) === currentCatFilter);
+            }
 
-function renderGrid() {
-    let items = allMenuItems;
-    if (currentCatFilter !== 'all') {
-        items = items.filter(i => String(i.category_id) === currentCatFilter);
-    }
+            document.getElementById('itemCount').textContent =
+                `${items.length} item${items.length !== 1 ? 's' : ''} · ${allMenuItems.filter(i => i.available).length} available`;
 
-    document.getElementById('itemCount').textContent =
-        `${items.length} item${items.length !== 1 ? 's' : ''} · ${allMenuItems.filter(i => i.available).length} available`;
+            const grid = document.getElementById('menuGrid');
+            if (!items.length) {
+                grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-muted);">No items in this category.</div>`;
+                return;
+            }
 
-    const grid = document.getElementById('menuGrid');
-    if (!items.length) {
-        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-muted);">No items in this category.</div>`;
-        return;
-    }
-
-    grid.innerHTML = items.map(item => {
-        // Always work with string IDs — never inject raw ObjectId into onclick
-        const itemId  = String(item._id || item.id);
-        const safeName = item.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        return `
+            grid.innerHTML = items.map(item => {
+                // Always work with string IDs — never inject raw ObjectId into onclick
+                const itemId = String(item._id || item.id);
+                const safeName = item.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                return `
         <div class="menu-admin-card ${item.available ? '' : 'unavailable'}" data-id="${itemId}">
             <img src="${item.image_url || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400'}"
                  alt="${item.name}"
@@ -230,168 +395,169 @@ function renderGrid() {
                     data-action="delete" data-id="${itemId}" data-name="${safeName}">🗑</button>
             </div>
         </div>`;
-    }).join('');
+            }).join('');
 
-    // Event delegation — no inline onclick with IDs
-    grid.addEventListener('click', handleGridClick);
-}
-
-function handleGridClick(e) {
-    const btn = e.target.closest('[data-action]');
-    if (!btn) return;
-    const id     = btn.dataset.id;
-    const action = btn.dataset.action;
-    if (action === 'edit')   openEditModal(id);
-    if (action === 'delete') openDeleteModal(id, btn.dataset.name);
-}
-
-function openAddModal() {
-    editingId = null;
-    document.getElementById('modalTitle').textContent = 'Add Menu Item';
-    document.getElementById('f_name').value    = '';
-    document.getElementById('f_desc').value    = '';
-    document.getElementById('f_price').value   = '';
-    document.getElementById('f_image').value   = '';
-    document.getElementById('f_category').value = '';
-    document.getElementById('f_available').checked = true;
-    document.getElementById('availableGroup').style.display = 'none';
-    document.getElementById('imgPreview').classList.remove('show');
-    document.getElementById('modalAlert').innerHTML = '';
-    document.getElementById('itemModal').classList.add('active');
-    setTimeout(() => document.getElementById('f_name').focus(), 100);
-}
-
-function openEditModal(id) {
-    // id is always a string
-    const item = allMenuItems.find(i => String(i._id || i.id) === String(id));
-    if (!item) { showToast('Item not found', 'error'); return; }
-
-    editingId = String(item._id || item.id);
-
-    document.getElementById('modalTitle').textContent = 'Edit Menu Item';
-    document.getElementById('f_name').value   = item.name;
-    document.getElementById('f_desc').value   = item.description || '';
-    document.getElementById('f_price').value  = item.price;
-    document.getElementById('f_image').value  = item.image_url || '';
-
-    // category_id is the string ObjectId — matches option values we built above
-    document.getElementById('f_category').value = String(item.category_id || '');
-
-    document.getElementById('f_available').checked = item.available == true;
-    document.getElementById('availableGroup').style.display = 'block';
-    updateAvailToggle(item.available == true);
-    document.getElementById('modalAlert').innerHTML = '';
-    previewImage(item.image_url || '');
-    document.getElementById('itemModal').classList.add('active');
-}
-
-function closeModal() {
-    document.getElementById('itemModal').classList.remove('active');
-    editingId = null;
-}
-
-function previewImage(url) {
-    const img = document.getElementById('imgPreview');
-    if (url && url.startsWith('http')) {
-        img.src = url;
-        img.classList.add('show');
-        img.onerror = () => img.classList.remove('show');
-    } else {
-        img.classList.remove('show');
-    }
-}
-
-function toggleAvail() {
-    const cb = document.getElementById('f_available');
-    cb.checked = !cb.checked;
-    updateAvailToggle(cb.checked);
-}
-
-function updateAvailToggle(on) {
-    const toggle = document.getElementById('availToggle');
-    document.getElementById('availIcon').textContent = on ? '✅' : '❌';
-    document.getElementById('availText').textContent = on ? 'Available on menu' : 'Hidden from menu';
-    toggle.className = `avail-toggle ${on ? 'on' : ''}`;
-}
-
-async function saveItem() {
-    const name        = document.getElementById('f_name').value.trim();
-    const description = document.getElementById('f_desc').value.trim();
-    const price       = parseFloat(document.getElementById('f_price').value);
-    const category_id = document.getElementById('f_category').value;
-    const image_url   = document.getElementById('f_image').value.trim();
-    const available   = document.getElementById('f_available').checked;
-    const alertEl     = document.getElementById('modalAlert');
-    const btn         = document.getElementById('saveBtn');
-
-    alertEl.innerHTML = '';
-    if (!name)            { alertEl.innerHTML = '<div class="alert alert-error">Item name is required.</div>';      return; }
-    if (!price || price <= 0) { alertEl.innerHTML = '<div class="alert alert-error">Enter a valid price.</div>';   return; }
-    if (!category_id)     { alertEl.innerHTML = '<div class="alert alert-error">Please select a category.</div>'; return; }
-
-    btn.textContent = 'Saving...';
-    btn.disabled    = true;
-
-    try {
-        const url    = editingId ? `/api/admin/menu/${editingId}` : '/api/admin/menu';
-        const method = editingId ? 'PUT' : 'POST';
-        const res    = await fetch(url, {
-            method,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, description, price, category_id, image_url, available })
-        });
-        const data = await res.json();
-
-        if (res.ok && data.success) {
-            showToast(editingId ? '✅ Item updated!' : '✅ Item added!', 'success');
-            closeModal();
-            loadMenu();   // full reload so grid is fresh
-        } else {
-            alertEl.innerHTML = `<div class="alert alert-error">${data.error || 'Failed to save item'}</div>`;
+            // Event delegation — no inline onclick with IDs
+            grid.addEventListener('click', handleGridClick);
         }
-    } catch (e) {
-        alertEl.innerHTML = '<div class="alert alert-error">Network error. Please try again.</div>';
-    }
 
-    btn.textContent = 'Save Item';
-    btn.disabled    = false;
-}
-
-function openDeleteModal(id, name) {
-    deletingId = String(id);
-    document.getElementById('deleteItemName').textContent = `"${name}" will be hidden from the menu.`;
-    document.getElementById('deleteModal').classList.add('active');
-}
-
-async function confirmDelete() {
-    if (!deletingId) return;
-    const btn = document.getElementById('confirmDeleteBtn');
-    btn.textContent = 'Removing...';
-    btn.disabled    = true;
-
-    try {
-        const res = await fetch(`/api/admin/menu/${deletingId}`, { method: 'DELETE' });
-        if (res.ok) {
-            showToast('Item removed from menu', 'success');
-            document.getElementById('deleteModal').classList.remove('active');
-            loadMenu();
-        } else {
-            showToast('Failed to remove item', 'error');
+        function handleGridClick(e) {
+            const btn = e.target.closest('[data-action]');
+            if (!btn) return;
+            const id = btn.dataset.id;
+            const action = btn.dataset.action;
+            if (action === 'edit') openEditModal(id);
+            if (action === 'delete') openDeleteModal(id, btn.dataset.name);
         }
-    } catch (e) {
-        showToast('Network error', 'error');
-    }
 
-    btn.textContent = 'Remove';
-    btn.disabled    = false;
-    deletingId      = null;
-}
+        function openAddModal() {
+            editingId = null;
+            document.getElementById('modalTitle').textContent = 'Add Menu Item';
+            document.getElementById('f_name').value = '';
+            document.getElementById('f_desc').value = '';
+            document.getElementById('f_price').value = '';
+            document.getElementById('f_image').value = '';
+            document.getElementById('f_category').value = '';
+            document.getElementById('f_available').checked = true;
+            document.getElementById('availableGroup').style.display = 'none';
+            document.getElementById('imgPreview').classList.remove('show');
+            document.getElementById('modalAlert').innerHTML = '';
+            document.getElementById('itemModal').classList.add('active');
+            setTimeout(() => document.getElementById('f_name').focus(), 100);
+        }
 
-// Close modals on backdrop click
-document.getElementById('itemModal').addEventListener('click',   e => { if (e.target === e.currentTarget) closeModal(); });
-document.getElementById('deleteModal').addEventListener('click',  e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('active'); });
+        function openEditModal(id) {
+            // id is always a string
+            const item = allMenuItems.find(i => String(i._id || i.id) === String(id));
+            if (!item) { showToast('Item not found', 'error'); return; }
 
-checkAdmin().then(loadMenu);
-</script>
+            editingId = String(item._id || item.id);
+
+            document.getElementById('modalTitle').textContent = 'Edit Menu Item';
+            document.getElementById('f_name').value = item.name;
+            document.getElementById('f_desc').value = item.description || '';
+            document.getElementById('f_price').value = item.price;
+            document.getElementById('f_image').value = item.image_url || '';
+
+            // category_id is the string ObjectId — matches option values we built above
+            document.getElementById('f_category').value = String(item.category_id || '');
+
+            document.getElementById('f_available').checked = item.available == true;
+            document.getElementById('availableGroup').style.display = 'block';
+            updateAvailToggle(item.available == true);
+            document.getElementById('modalAlert').innerHTML = '';
+            previewImage(item.image_url || '');
+            document.getElementById('itemModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('itemModal').classList.remove('active');
+            editingId = null;
+        }
+
+        function previewImage(url) {
+            const img = document.getElementById('imgPreview');
+            if (url && url.startsWith('http')) {
+                img.src = url;
+                img.classList.add('show');
+                img.onerror = () => img.classList.remove('show');
+            } else {
+                img.classList.remove('show');
+            }
+        }
+
+        function toggleAvail() {
+            const cb = document.getElementById('f_available');
+            cb.checked = !cb.checked;
+            updateAvailToggle(cb.checked);
+        }
+
+        function updateAvailToggle(on) {
+            const toggle = document.getElementById('availToggle');
+            document.getElementById('availIcon').textContent = on ? '✅' : '❌';
+            document.getElementById('availText').textContent = on ? 'Available on menu' : 'Hidden from menu';
+            toggle.className = `avail-toggle ${on ? 'on' : ''}`;
+        }
+
+        async function saveItem() {
+            const name = document.getElementById('f_name').value.trim();
+            const description = document.getElementById('f_desc').value.trim();
+            const price = parseFloat(document.getElementById('f_price').value);
+            const category_id = document.getElementById('f_category').value;
+            const image_url = document.getElementById('f_image').value.trim();
+            const available = document.getElementById('f_available').checked;
+            const alertEl = document.getElementById('modalAlert');
+            const btn = document.getElementById('saveBtn');
+
+            alertEl.innerHTML = '';
+            if (!name) { alertEl.innerHTML = '<div class="alert alert-error">Item name is required.</div>'; return; }
+            if (!price || price <= 0) { alertEl.innerHTML = '<div class="alert alert-error">Enter a valid price.</div>'; return; }
+            if (!category_id) { alertEl.innerHTML = '<div class="alert alert-error">Please select a category.</div>'; return; }
+
+            btn.textContent = 'Saving...';
+            btn.disabled = true;
+
+            try {
+                const url = editingId ? `/api/admin/menu/${editingId}` : '/api/admin/menu';
+                const method = editingId ? 'PUT' : 'POST';
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, description, price, category_id, image_url, available })
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    showToast(editingId ? '✅ Item updated!' : '✅ Item added!', 'success');
+                    closeModal();
+                    loadMenu();   // full reload so grid is fresh
+                } else {
+                    alertEl.innerHTML = `<div class="alert alert-error">${data.error || 'Failed to save item'}</div>`;
+                }
+            } catch (e) {
+                alertEl.innerHTML = '<div class="alert alert-error">Network error. Please try again.</div>';
+            }
+
+            btn.textContent = 'Save Item';
+            btn.disabled = false;
+        }
+
+        function openDeleteModal(id, name) {
+            deletingId = String(id);
+            document.getElementById('deleteItemName').textContent = `"${name}" will be hidden from the menu.`;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        async function confirmDelete() {
+            if (!deletingId) return;
+            const btn = document.getElementById('confirmDeleteBtn');
+            btn.textContent = 'Removing...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`/api/admin/menu/${deletingId}`, { method: 'DELETE' });
+                if (res.ok) {
+                    showToast('Item removed from menu', 'success');
+                    document.getElementById('deleteModal').classList.remove('active');
+                    loadMenu();
+                } else {
+                    showToast('Failed to remove item', 'error');
+                }
+            } catch (e) {
+                showToast('Network error', 'error');
+            }
+
+            btn.textContent = 'Remove';
+            btn.disabled = false;
+            deletingId = null;
+        }
+
+        // Close modals on backdrop click
+        document.getElementById('itemModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+        document.getElementById('deleteModal').addEventListener('click', e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('active'); });
+
+        checkAdmin().then(loadMenu);
+    </script>
 </body>
+
 </html>
