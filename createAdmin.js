@@ -7,15 +7,24 @@ const { User } = require('./models/db');
 
 // ── Admin credentials — change these if you want ──
 const ADMIN_NAME     = 'Admin';
-const ADMIN_EMAIL    = 'admin@cafe.com';
-const ADMIN_PASSWORD = 'admin123';
+const ADMIN_EMAIL    = 'admin@justcafe.com';
+const ADMIN_PASSWORD = 'justcafe123';
 // ──────────────────────────────────────────────────
 
 async function main() {
     console.log('🔗 Connecting to Firestore...');
 
     try {
-        // Check if admin already exists
+        // Remove old admin if exists
+        const oldSnapshot = await User.where('email', '==', 'admin@cafe.com').get();
+        if (!oldSnapshot.empty) {
+            for (const doc of oldSnapshot.docs) {
+                await doc.ref.delete();
+            }
+            console.log('🗑️ Removed old admin account (admin@cafe.com)');
+        }
+
+        // Check if new admin already exists
         const snapshot = await User.where('email', '==', ADMIN_EMAIL.toLowerCase()).limit(1).get();
 
         if (!snapshot.empty) {
