@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Menu Management — Campus Café Admin</title>
+<title>Menu Management — Just Cafe Admin</title>
 <link rel="stylesheet" href="/css/style.css">
 <style>
-    body { background: #F5EFE8; }
+    body { background: var(--bg); }
     .admin-layout { display: flex; min-height: calc(100vh - 64px); }
     .admin-sidebar { width:240px;background:var(--bg-dark);padding:1.5rem 1rem;flex-shrink:0;display:flex;flex-direction:column;gap:0.25rem; }
     .sidebar-label { font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6B5040;padding:.5rem 1rem .25rem;margin-top:.5rem; }
@@ -42,15 +42,15 @@
 <body>
 
 <nav class="navbar">
-    <a href="/" class="navbar-brand">☕ <span>Campus</span>Café</a>
+    <a href="/" class="navbar-brand">☕ <span>Just</span>Cafe</a>
     <ul class="nav-links" id="navUserSection"></ul>
 </nav>
 
 <div class="admin-layout">
     <aside class="admin-sidebar">
         <div style="padding:.5rem 1rem 1.2rem;border-bottom:1px solid #3A2416;margin-bottom:.5rem;">
-            <div style="font-size:.8rem;color:#6B5040;font-weight:600;">ADMIN PANEL</div>
-            <div style="font-size:1rem;color:var(--accent);font-weight:800;margin-top:2px;">Campus Café</div>
+            <div style="font-size:.8rem;color:var(--text-muted);font-weight:600;">ADMIN PANEL</div>
+            <div style="font-size:1rem;color:var(--accent);font-weight:800;margin-top:2px;">Just Cafe</div>
         </div>
         <div class="sidebar-label">Main</div>
         <a href="/admin/dashboard">📊 Dashboard</a>

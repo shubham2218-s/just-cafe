@@ -1,29 +1,31 @@
-/* ========== CAFÉ THEME CSS ========== */
+/* ========== JUST CAFÉ THEME CSS ========== */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
 :root {
-    --primary: #6F4E37;        /* coffee brown */
-    --primary-dark: #4A3220;
-    --primary-light: #9B6B4D;
-    --accent: #D4A054;         /* golden caramel */
-    --accent-light: #F2C87A;
-    --bg: #FDF6EE;             /* warm cream */
+    --primary: #111111;        /* sleek black */
+    --primary-dark: #000000;
+    --primary-light: #333333;
+    --accent: #F7D060;         /* vibrant honey */
+    --accent-light: #FFD97D;
+    --bg: #FAF9F6;             /* off-white cream */
     --bg-card: #FFFFFF;
-    --bg-dark: #2C1A0E;
-    --text: #2C1A0E;
-    --text-light: #7A6055;
-    --text-muted: #B09080;
-    --success: #4CAF50;
-    --danger: #E53935;
-    --warning: #FF9800;
-    --border: #E8D5C4;
-    --shadow: rgba(111, 78, 55, 0.12);
-    --gradient: linear-gradient(135deg, #6F4E37 0%, #9B6B4D 50%, #D4A054 100%);
-    --gradient-hero: linear-gradient(135deg, #2C1A0E 0%, #6F4E37 60%, #9B6B4D 100%);
+    --bg-dark: #111111;
+    --text: #111111;
+    --text-light: #555555;
+    --text-muted: #999999;
+    --success: #00B894;
+    --danger: #FF7675;
+    --warning: #FAB1A0;
+    --border: #EBEBEB;
+    --shadow: rgba(0, 0, 0, 0.08);
+    --gradient: linear-gradient(135deg, #111111 0%, #333333 100%);
+    --gradient-hero: linear-gradient(135deg, rgba(0,0,0,0.9) 0%, rgba(20,20,20,0.7) 100%);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-family: 'Outfit', system-ui, sans-serif;
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
@@ -183,7 +185,7 @@ body {
 .hero::before {
     content: '';
     position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(44,26,14,0.85) 0%, rgba(111,78,55,0.75) 100%);
+    background: var(--gradient-hero);
 }
 
 .hero-content { position: relative; z-index: 1; max-width: 600px; margin: 0 auto; }

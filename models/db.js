@@ -2,7 +2,7 @@ const admin = require('firebase-admin');
 
 // Initialize Firebase Admin
 let adminConfig = {
-    projectId: process.env.FIREBASE_PROJECT_ID || 'college-cafe-5487b'
+    projectId: process.env.FIREBASE_PROJECT_ID || 'just-cafe-2a77e'
 };
 
 if (process.env.FIREBASE_SERVICE_ACCOUNT) {

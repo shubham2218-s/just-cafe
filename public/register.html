@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Register — Campus Café</title>
+<title>Register — Just Cafe</title>
 <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
     <div class="auth-card">
         <div class="auth-logo">
             <div class="logo-icon">☕</div>
-            <h2>Join Campus Café</h2>
+            <h2>Join Just Cafe</h2>
             <p>Create your free account today</p>
         </div>
 
@@ -85,7 +85,7 @@ async function doRegister() {
         const data = await res.json();
 
         if (res.ok && data.success) {
-            showToast('Account created! Welcome to Campus Café ☕', 'success');
+            showToast('Account created! Welcome to Just Cafe ☕', 'success');
             setTimeout(() => window.location.href = '/menu', 700);
         } else {
             alertBox.innerHTML = `<div class="alert alert-error">${data.error || 'Registration failed.'}</div>`;

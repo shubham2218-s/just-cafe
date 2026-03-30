@@ -68,7 +68,7 @@ app.get('/admin/orders',         (req, res) => res.sendFile(path.join(__dirname,
 app.set('trust proxy', 1);
 
 app.listen(PORT, () => {
-    console.log(`✅ Campus Café running on port ${PORT}`);
+    console.log(`✅ Just Café running on port ${PORT}`);
     console.log(`   Admin panel → http://localhost:${PORT}/admin/dashboard`);
 });
 

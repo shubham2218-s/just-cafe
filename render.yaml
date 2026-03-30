@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: just-cafe
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: FIREBASE_PROJECT_ID
+        value: just-cafe-2a77e
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: FIREBASE_SERVICE_ACCOUNT
+        sync: false # User must provide this in Render Dashboard

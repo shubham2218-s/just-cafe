@@ -1,7 +1,7 @@
 {
-  "name": "college-cafe-ordering",
+  "name": "just-cafe",
   "version": "1.0.0",
-  "description": "College Cafe Ordering System",
+  "description": "Just Cafe Ordering System",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
