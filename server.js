@@ -68,3 +68,6 @@ app.listen(PORT, () => {
     console.log(`✅ Campus Café running on port ${PORT}`);
     console.log(`   Admin panel → http://localhost:${PORT}/admin/dashboard`);
 });
+
+// Required for Vercel Serverless deployment
+module.exports = app;

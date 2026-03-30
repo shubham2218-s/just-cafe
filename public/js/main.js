@@ -1,8 +1,7 @@
 // ========== GLOBAL API CONFIG ==========
-// The base URL of the backend (e.g. Render). For local testing, it uses localhost.
-const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-    ? 'http://localhost:3000' 
-    : 'https://college-cafe-backend.onrender.com'; // TODO: Update this to your actual Render URL when deployed!
+// If you host frontend AND backend on Vercel, leave this as empty string.
+// If you host frontend on Firebase and backend on Vercel, paste your Vercel URL here.
+const API_BASE = ''; 
 
 // Intercept all fetch calls starting with '/api' to point to the backend and include credentials for sessions
 const originalFetch = window.fetch;
